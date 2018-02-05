@@ -1,0 +1,17 @@
+package: microservices
+import:
+- package: github.com/go-openapi/errors
+- package: github.com/go-openapi/loads
+- package: github.com/go-openapi/runtime
+  subpackages:
+  - flagext
+  - middleware
+  - security
+- package: github.com/go-openapi/spec
+- package: github.com/go-openapi/strfmt
+- package: github.com/go-openapi/swag
+- package: github.com/go-openapi/validate
+- package: github.com/jessevdk/go-flags
+  version: ^1.3.0
+- package: github.com/tylerb/graceful
+  version: ^1.2.15
