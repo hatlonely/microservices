@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   description: 不想依赖第三方的统计和评论，自己开发一个点赞评论系统
   version: 1.0.0
-  title: hatlonely.me
+  title: comment_like
   contact:
     email: hatlonely@foxmail.com
   license:
