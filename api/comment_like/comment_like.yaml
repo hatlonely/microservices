@@ -128,7 +128,7 @@ paths:
         - comment
       summary: 评论
       description: ''
-      operationId: comment
+      operationId: doComment
       consumes:
         - application/json
       produces:
