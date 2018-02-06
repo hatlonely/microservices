@@ -1,5 +1,5 @@
-codegen: cmd/hatlonely-me-server/main.go
+codegen: cmd/comment_like/main.go
 
-cmd/hatlonely-me-server/main.go: api/hatlonely.me/hatlonely.me.yaml
-	swagger generate server -f api/hatlonely.me/hatlonely.me.yaml	
+cmd/comment_like/main.go: api/comment_like/comment_like.yaml
+	swagger generate server -f api/comment_like/comment_like.yaml
 
