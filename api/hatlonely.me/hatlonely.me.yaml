@@ -1,0 +1,118 @@
+swagger: '2.0'
+info:
+  description: 不想依赖第三方的统计和评论，自己开发一个点赞评论系统
+  version: 1.0.0
+  title: hatlonely.me
+  contact:
+    email: hatlonely@foxmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+host: hatlonely.com
+basePath: /api
+tags:
+  - name: like
+    description: 点赞
+  - name: comment
+    description: 评论
+schemes:
+  - http
+paths:
+  /like:
+    get:
+      tags:
+        - like
+      summary: 点了一个赞
+      description: ''
+      operationId: like
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/OkModel'
+        '400':
+          description: 失败
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /comment:
+    get:
+      tags:
+        - comment
+      summary: 写了一句评论
+      description: ''
+      operationId: comment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+        - name: comment
+          in: query
+          description: 文章评论
+          required: true
+          type: string
+        - name: nickname
+          in: query
+          description: 昵称
+          required: false
+          type: string
+        - name: mail
+          in: query
+          description: 邮箱地址
+          required: false
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/OkModel'
+        '400':
+          description: 失败
+          schema:
+            $ref: '#/definitions/ErrorModel'
+definitions:
+  OkModel:
+    type: object
+    required:
+    - message
+    - code
+    properties:
+      message:
+        type: string
+        default: ok
+        enum:
+          - ok
+      code:
+        type: integer
+        default: 200
+        enum:
+          - 200
+  ErrorModel:
+    type: object
+    required:
+    - message
+    - code
+    properties:
+      message:
+        type: string
+        default: "error"
+      code:
+        type: integer
+        default: 400
+        enum:
+          - 400
