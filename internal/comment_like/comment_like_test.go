@@ -88,6 +88,46 @@ func TestShowLike(t *testing.T) {
 	})
 }
 
+func TestCountLike(t *testing.T) {
+	Convey("Given 用户在阅读", t, func() {
+		ip := "127.0.0.1"
+		ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+		title := "golang 网络框架之 grpc"
+
+		Convey("When 数据库里面没有点赞信息", func() {
+			count, err := CountLike(title)
+			So(err, ShouldBeNil)
+			Convey("Then 点赞次数为0", func() {
+				So(count, ShouldEqual, 0)
+			})
+		})
+
+		Convey("When 先点个赞", func() {
+			err := DoLike(ip, ua, title)
+			So(err, ShouldBeNil)
+			count, err := CountLike(title)
+			So(err, ShouldBeNil)
+			Convey("Then 点赞次数为1", func() {
+				So(count, ShouldEqual, 1)
+			})
+		})
+
+		Convey("When 再点个赞", func() {
+			err := DoLike("192.168.0.2", ua, title)
+			So(err, ShouldBeNil)
+			count, err := CountLike(title)
+			So(err, ShouldBeNil)
+			Convey("Then 点赞次数为1", func() {
+				So(count, ShouldEqual, 2)
+			})
+		})
+
+		Convey("Finally 删除记录", func() {
+			db.Where(&Like{Title: title}).Delete(Like{})
+		})
+	})
+}
+
 func TestDoComment(t *testing.T) {
 	Convey("Given 用户在阅读", t, func() {
 		ip := "127.0.0.1"

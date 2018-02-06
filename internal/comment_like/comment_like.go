@@ -10,9 +10,9 @@ import (
 
 type Like struct {
 	ID        int    `gorm:"primary_key"`
-	Ip        string `gorm:"type:varchar(20);not null;"`
+	Ip        string `gorm:"type:varchar(20);not null;index:ip_idx"`
 	Ua        string `gorm:"type:varchar(256);not null;"`
-	Title     string `gorm:"type:varchar(256);not null;"`
+	Title     string `gorm:"type:varchar(256);not null;index:title_idx"`
 	Hash      uint64 `gorm:"unique_index:hash_idx;"`
 	CreatedAt time.Time
 }
@@ -84,6 +84,17 @@ func ShowLike(ip, ua, title string) (bool, error) {
 	}
 
 	return count != 0, nil
+}
+
+func CountLike(title string) (int64, error) {
+	var count int64
+	err := db.Model(&Like{}).Where(&Like{Title: title}).Count(&count).Error
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func DoComment(ip, ua, title, comment, nickname, mail string) error {
