@@ -4,17 +4,17 @@ import (
 	"crypto/tls"
 	"net/http"
 
-	errors "github.com/go-openapi/errors"
-	runtime "github.com/go-openapi/runtime"
-	middleware "github.com/go-openapi/runtime/middleware"
-	graceful "github.com/tylerb/graceful"
+	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
+	"github.com/go-openapi/runtime/middleware"
+	"github.com/tylerb/graceful"
 
 	"microservices/restapi/operations"
 	"microservices/restapi/operations/comment"
 	"microservices/restapi/operations/like"
 	"microservices/internal/comment_like"
 	"microservices/models"
-	"fmt"
+	"strings"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -49,25 +49,115 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 			Title: &params.Title,
 		})
 	})
+
 	api.CommentDoCommentHandler = comment.DoCommentHandlerFunc(func(params comment.DoCommentParams) middleware.Responder {
-		//comment_like.DoComment(params.HTTPRequest.p)
-		ip := params.HTTPRequest.Header.Get("RemoteAddr")
-		fmt.Println(ip)
-		fmt.Printf("%#v\n", params.HTTPRequest)
-		fmt.Printf("%+v\n", params.HTTPRequest)
-		return middleware.NotImplemented("operation comment.DoComment has not yet been implemented")
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+		var nickname, mail string
+		if params.Nickname != nil {
+			nickname = *params.Nickname
+		}
+		if params.Mail != nil {
+			mail = *params.Mail
+		}
+
+		code := int64(200)
+		message := "ok"
+		if err := comment_like.DoComment(ip, ua, params.Title, params.Comment, nickname, mail); err != nil {
+			code = int64(400)
+			message = err.Error()
+			return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
+				Code:    &code,
+				Message: &message,
+			})
+		}
+
+		return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
+			Code:    &code,
+			Message: &message,
+		})
 	})
+
 	api.LikeDoLikeHandler = like.DoLikeHandlerFunc(func(params like.DoLikeParams) middleware.Responder {
-		return middleware.NotImplemented("operation like.DoLike has not yet been implemented")
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		code := int64(200)
+		message := "ok"
+		if err := comment_like.DoLike(ip, ua, params.Title); err != nil {
+			code = int64(400)
+			message = err.Error()
+			return like.NewDoLikeBadRequest().WithPayload(&models.ErrorModel{
+				Code:    &code,
+				Message: &message,
+			})
+		}
+
+		return like.NewDoLikeBadRequest().WithPayload(&models.ErrorModel{
+			Code:    &code,
+			Message: &message,
+		})
 	})
+
 	api.LikeDoUnlikeHandler = like.DoUnlikeHandlerFunc(func(params like.DoUnlikeParams) middleware.Responder {
-		return middleware.NotImplemented("operation like.DoUnlike has not yet been implemented")
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		code := int64(200)
+		message := "ok"
+		if err := comment_like.DoUnlike(ip, ua, params.Title); err != nil {
+			code = int64(400)
+			message = err.Error()
+			return like.NewDoUnlikeBadRequest().WithPayload(&models.ErrorModel{
+				Code:    &code,
+				Message: &message,
+			})
+		}
+
+		return like.NewDoUnlikeBadRequest().WithPayload(&models.ErrorModel{
+			Code:    &code,
+			Message: &message,
+		})
 	})
+
 	api.CommentShowCommentHandler = comment.ShowCommentHandlerFunc(func(params comment.ShowCommentParams) middleware.Responder {
+		//comments, err := comment_like.ShowComment(params.Title)
+		//code := int64(200)
+		//message := "ok"
+		//if err != nil {
+		//	code = int64(400)
+		//	message = err.Error()
+		//	return comment.NewShowCommentBadRequest().WithPayload(&models.ErrorModel{
+		//		Code:    &code,
+		//		Message: &message,
+		//	})
+		//}
+
 		return middleware.NotImplemented("operation comment.ShowComment has not yet been implemented")
 	})
+
 	api.LikeShowLikeHandler = like.ShowLikeHandlerFunc(func(params like.ShowLikeParams) middleware.Responder {
-		return middleware.NotImplemented("operation like.ShowLike has not yet been implemented")
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		code := int64(200)
+		message := "ok"
+		isLike, err := comment_like.ShowLike(ip, ua, params.Title)
+		if err != nil {
+			code = int64(400)
+			message = err.Error()
+			return like.NewShowLikeBadRequest().WithPayload(&models.ErrorModel{
+				Code:    &code,
+				Message: &message,
+			})
+		}
+
+		return like.NewShowLikeOK().WithPayload(&models.ShowLikeModel{
+			IP: ip,
+			Ua: ua,
+			Title: params.Title,
+			Islike: &isLike,
+		})
 	})
 
 	api.ServerShutdown = func() {}

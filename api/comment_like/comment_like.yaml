@@ -39,7 +39,7 @@ paths:
         '200':
           description: 成功
           schema:
-            $ref: '#/definitions/OkModel'
+            $ref: '#/definitions/ErrorModel'
         '400':
           description: 失败
           schema:
@@ -65,7 +65,7 @@ paths:
         '200':
           description: 成功
           schema:
-            $ref: '#/definitions/OkModel'
+            $ref: '#/definitions/ErrorModel'
         '400':
           description: 失败
           schema:
@@ -158,7 +158,7 @@ paths:
         '200':
           description: 成功
           schema:
-            $ref: '#/definitions/OkModel'
+            $ref: '#/definitions/ErrorModel'
         '400':
           description: 失败
           schema:
@@ -242,22 +242,6 @@ definitions:
       mail:
         type: string
         example: sonic@foxmail.com
-  OkModel:
-    type: object
-    required:
-      - message
-      - code
-    properties:
-      message:
-        type: string
-        default: ok
-        enum:
-          - ok
-      code:
-        type: integer
-        default: 200
-        enum:
-          - 200
   ErrorModel:
     type: object
     required:
