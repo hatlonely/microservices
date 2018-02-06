@@ -22,9 +22,9 @@ paths:
     get:
       tags:
         - like
-      summary: 点了一个赞
+      summary: 点赞
       description: ''
-      operationId: like
+      operationId: doLike
       consumes:
         - application/json
       produces:
@@ -44,11 +44,89 @@ paths:
           description: 失败
           schema:
             $ref: '#/definitions/ErrorModel'
+  /unlike:
+    get:
+      tags:
+        - like
+      summary: 取消赞
+      description: ''
+      operationId: doUnlike
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/OkModel'
+        '400':
+          description: 失败
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /showlike:
+    get:
+      tags:
+        - like
+      summary: 点赞否
+      description: ''
+      operationId: showLike
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/ShowLikeModel'
+        '400':
+          description: 失败
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /countlike:
+    get:
+      tags:
+        - like
+      summary: 有多少赞
+      description: ''
+      operationId: countLike
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/CountLikeModel'
+        '400':
+          description: 失败
+          schema:
+            $ref: '#/definitions/ErrorModel'
   /comment:
     get:
       tags:
         - comment
-      summary: 写了一句评论
+      summary: 评论
       description: ''
       operationId: comment
       consumes:
@@ -61,7 +139,7 @@ paths:
           description: 文章标题
           required: true
           type: string
-        - name: comment
+        - name: doComment
           in: query
           description: 文章评论
           required: true
@@ -85,12 +163,90 @@ paths:
           description: 失败
           schema:
             $ref: '#/definitions/ErrorModel'
+  /showcomment:
+    get:
+      tags:
+        - comment
+      summary: 显示评论
+      description: ''
+      operationId: showComment
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/ShowCommentModel'
+        '400':
+          description: 失败
+          schema:
+            $ref: '#/definitions/ErrorModel'
 definitions:
+  ShowLikeModel:
+    type: object
+    properties:
+      ip:
+        type: string
+        example: 127.0.0.1
+      ua:
+        type: string
+        example: >-
+          Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36
+          (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36
+      title:
+        type: string
+        example: golang json 性能分析
+      islike:
+        type: boolean
+        default: false
+  CountLikeModel:
+    type: object
+    required:
+      - count
+      - title
+    properties:
+      count:
+        type: integer
+        default: 0
+      title:
+        type: string
+        example: golang json 性能分析
+  ShowCommentModel:
+    type: object
+    required:
+      - comments
+    properties:
+      comments:
+        type: array
+        items:
+          $ref: '#/definitions/CommentModel'
+  CommentModel:
+    type: object
+    required:
+      - comment
+    properties:
+      comment:
+        type: string
+        example: 写得很好
+      nickname:
+        type: string
+        example: sonic
+      mail:
+        type: string
+        example: sonic@foxmail.com
   OkModel:
     type: object
     required:
-    - message
-    - code
+      - message
+      - code
     properties:
       message:
         type: string
@@ -105,12 +261,12 @@ definitions:
   ErrorModel:
     type: object
     required:
-    - message
-    - code
+      - message
+      - code
     properties:
       message:
         type: string
-        default: "error"
+        example: error message
       code:
         type: integer
         default: 400
