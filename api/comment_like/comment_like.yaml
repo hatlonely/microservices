@@ -40,8 +40,8 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/ErrorModel'
-        '400':
-          description: 失败
+        '500':
+          description: 内部错误
           schema:
             $ref: '#/definitions/ErrorModel'
   /dounlike:
@@ -66,8 +66,8 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/ErrorModel'
-        '400':
-          description: 失败
+        '500':
+          description: 内部错误
           schema:
             $ref: '#/definitions/ErrorModel'
   /showlike:
@@ -92,8 +92,8 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/ShowLikeModel'
-        '400':
-          description: 失败
+        '500':
+          description: 内部错误
           schema:
             $ref: '#/definitions/ErrorModel'
   /countlike:
@@ -118,8 +118,8 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/CountLikeModel'
-        '400':
-          description: 失败
+        '500':
+          description: 内部错误
           schema:
             $ref: '#/definitions/ErrorModel'
   /docomment:
@@ -159,8 +159,8 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/ErrorModel'
-        '400':
-          description: 失败
+        '500':
+          description: 内部错误
           schema:
             $ref: '#/definitions/ErrorModel'
   /showcomment:
@@ -185,8 +185,8 @@ paths:
           description: 成功
           schema:
             $ref: '#/definitions/ShowCommentModel'
-        '400':
-          description: 失败
+        '500':
+          description: 内部错误
           schema:
             $ref: '#/definitions/ErrorModel'
 definitions:
