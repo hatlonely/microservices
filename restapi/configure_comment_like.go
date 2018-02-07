@@ -121,7 +121,7 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		for _, c := range *comments {
 			payload.Comments = append(payload.Comments, &models.CommentModel{
 				Comment: c.Comment,
-				Nickname: c.NickName,
+				Nickname: c.Nickname,
 				Mail: c.Mail,
 			})
 		}

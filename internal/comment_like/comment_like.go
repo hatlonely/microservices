@@ -23,7 +23,7 @@ type Comment struct {
 	Ua        string `gorm:"type:varchar(256);not null;"`
 	Title     string `gorm:"type:varchar(128);not null;index:title_idx"`
 	Comment   string `gorm:"type:varchar(1024);not null;"`
-	NickName  string `gorm:"type:varchar(20);"`
+	Nickname  string `gorm:"type:varchar(64);"`
 	Mail      string `gorm:"type:varchar(256);"`
 	CreatedAt time.Time
 }
@@ -107,7 +107,7 @@ func DoComment(ip, ua, title, comment, nickname, mail string) error {
 		Ua:        ua,
 		Title:     title,
 		Comment:   comment,
-		NickName:  nickname,
+		Nickname:  nickname,
 		Mail:      mail,
 		CreatedAt: time.Now(),
 	}
