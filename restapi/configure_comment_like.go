@@ -39,10 +39,67 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 
 	api.JSONProducer = runtime.JSONProducer()
 
+	api.LikeDoLikeHandler = like.DoLikeHandlerFunc(func(params like.DoLikeParams) middleware.Responder {
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		if err := comment_like.DoLike(ip, ua, params.Title); err != nil {
+			return like.NewDoLikeInternalServerError().WithPayload(&models.ErrorModel{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		return like.NewDoLikeOK().WithPayload(&models.ErrorModel{
+			Code:    http.StatusOK,
+			Message: "ok",
+		})
+	})
+
+	api.LikeDoUnlikeHandler = like.DoUnlikeHandlerFunc(func(params like.DoUnlikeParams) middleware.Responder {
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		if err := comment_like.DoUnlike(ip, ua, params.Title); err != nil {
+			return like.NewDoUnlikeInternalServerError().WithPayload(&models.ErrorModel{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		return like.NewDoUnlikeOK().WithPayload(&models.ErrorModel{
+			Code:    http.StatusOK,
+			Message: "ok",
+		})
+	})
+
+	api.LikeShowLikeHandler = like.ShowLikeHandlerFunc(func(params like.ShowLikeParams) middleware.Responder {
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		isLike, err := comment_like.ShowLike(ip, ua, params.Title)
+		if err != nil {
+			return like.NewShowLikeInternalServerError().WithPayload(&models.ErrorModel{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		return like.NewShowLikeOK().WithPayload(&models.ShowLikeModel{
+			IP: ip,
+			Ua: ua,
+			Title: params.Title,
+			Islike: isLike,
+		})
+	})
+
 	api.LikeCountLikeHandler = like.CountLikeHandlerFunc(func(params like.CountLikeParams) middleware.Responder {
 		count, err := comment_like.CountLike(params.Title)
 		if err != nil {
-			return like.NewCountLikeBadRequest()
+			return like.NewCountLikeInternalServerError().WithPayload(&models.ErrorModel{
+				Code: http.StatusInternalServerError,
+				Message: err.Error(),
+			})
 		}
 		return like.NewCountLikeOK().WithPayload(&models.CountLikeModel{
 			Count: count,
@@ -62,47 +119,13 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		}
 
 		if err := comment_like.DoComment(ip, ua, params.Title, params.Content, nickname, mail); err != nil {
-			return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
+			return comment.NewDoCommentInternalServerError().WithPayload(&models.ErrorModel{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),
 			})
 		}
 
-		return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
-			Code:    http.StatusOK,
-			Message: "ok",
-		})
-	})
-
-	api.LikeDoLikeHandler = like.DoLikeHandlerFunc(func(params like.DoLikeParams) middleware.Responder {
-		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
-		ua := params.HTTPRequest.UserAgent()
-
-		if err := comment_like.DoLike(ip, ua, params.Title); err != nil {
-			return like.NewDoLikeBadRequest().WithPayload(&models.ErrorModel{
-				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
-			})
-		}
-
-		return like.NewDoLikeBadRequest().WithPayload(&models.ErrorModel{
-			Code:    http.StatusOK,
-			Message: "ok",
-		})
-	})
-
-	api.LikeDoUnlikeHandler = like.DoUnlikeHandlerFunc(func(params like.DoUnlikeParams) middleware.Responder {
-		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
-		ua := params.HTTPRequest.UserAgent()
-
-		if err := comment_like.DoUnlike(ip, ua, params.Title); err != nil {
-			return like.NewDoUnlikeBadRequest().WithPayload(&models.ErrorModel{
-				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
-			})
-		}
-
-		return like.NewDoUnlikeBadRequest().WithPayload(&models.ErrorModel{
+		return comment.NewDoCommentOK().WithPayload(&models.ErrorModel{
 			Code:    http.StatusOK,
 			Message: "ok",
 		})
@@ -111,7 +134,7 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 	api.CommentShowCommentHandler = comment.ShowCommentHandlerFunc(func(params comment.ShowCommentParams) middleware.Responder {
 		comments, err := comment_like.ShowComment(params.Title)
 		if err != nil {
-			return comment.NewShowCommentBadRequest().WithPayload(&models.ErrorModel{
+			return comment.NewShowCommentInternalServerError().WithPayload(&models.ErrorModel{
 				Code: http.StatusInternalServerError,
 				Message: err.Error(),
 			})
@@ -127,26 +150,6 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		}
 
 		return comment.NewShowCommentOK().WithPayload(&payload)
-	})
-
-	api.LikeShowLikeHandler = like.ShowLikeHandlerFunc(func(params like.ShowLikeParams) middleware.Responder {
-		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
-		ua := params.HTTPRequest.UserAgent()
-
-		isLike, err := comment_like.ShowLike(ip, ua, params.Title)
-		if err != nil {
-			return like.NewShowLikeBadRequest().WithPayload(&models.ErrorModel{
-				Code:    http.StatusInternalServerError,
-				Message: err.Error(),
-			})
-		}
-
-		return like.NewShowLikeOK().WithPayload(&models.ShowLikeModel{
-			IP: ip,
-			Ua: ua,
-			Title: params.Title,
-			Islike: isLike,
-		})
 	})
 
 	api.ServerShutdown = func() {}
