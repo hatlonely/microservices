@@ -45,8 +45,8 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 			return like.NewCountLikeBadRequest()
 		}
 		return like.NewCountLikeOK().WithPayload(&models.CountLikeModel{
-			Count: &count,
-			Title: &params.Title,
+			Count: count,
+			Title: params.Title,
 		})
 	})
 
@@ -61,20 +61,16 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 			mail = *params.Mail
 		}
 
-		code := int64(200)
-		message := "ok"
 		if err := comment_like.DoComment(ip, ua, params.Title, params.Comment, nickname, mail); err != nil {
-			code = int64(400)
-			message = err.Error()
 			return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
-				Code:    &code,
-				Message: &message,
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
 			})
 		}
 
 		return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
-			Code:    &code,
-			Message: &message,
+			Code:    http.StatusOK,
+			Message: "ok",
 		})
 	})
 
@@ -82,20 +78,16 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
 		ua := params.HTTPRequest.UserAgent()
 
-		code := int64(200)
-		message := "ok"
 		if err := comment_like.DoLike(ip, ua, params.Title); err != nil {
-			code = int64(400)
-			message = err.Error()
 			return like.NewDoLikeBadRequest().WithPayload(&models.ErrorModel{
-				Code:    &code,
-				Message: &message,
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
 			})
 		}
 
 		return like.NewDoLikeBadRequest().WithPayload(&models.ErrorModel{
-			Code:    &code,
-			Message: &message,
+			Code:    http.StatusOK,
+			Message: "ok",
 		})
 	})
 
@@ -103,20 +95,16 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
 		ua := params.HTTPRequest.UserAgent()
 
-		code := int64(200)
-		message := "ok"
 		if err := comment_like.DoUnlike(ip, ua, params.Title); err != nil {
-			code = int64(400)
-			message = err.Error()
 			return like.NewDoUnlikeBadRequest().WithPayload(&models.ErrorModel{
-				Code:    &code,
-				Message: &message,
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
 			})
 		}
 
 		return like.NewDoUnlikeBadRequest().WithPayload(&models.ErrorModel{
-			Code:    &code,
-			Message: &message,
+			Code:    http.StatusOK,
+			Message: "ok",
 		})
 	})
 
@@ -140,15 +128,11 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
 		ua := params.HTTPRequest.UserAgent()
 
-		code := int64(200)
-		message := "ok"
 		isLike, err := comment_like.ShowLike(ip, ua, params.Title)
 		if err != nil {
-			code = int64(400)
-			message = err.Error()
 			return like.NewShowLikeBadRequest().WithPayload(&models.ErrorModel{
-				Code:    &code,
-				Message: &message,
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
 			})
 		}
 
@@ -156,7 +140,7 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 			IP: ip,
 			Ua: ua,
 			Title: params.Title,
-			Islike: &isLike,
+			Islike: isLike,
 		})
 	})
 

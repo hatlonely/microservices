@@ -206,23 +206,16 @@ definitions:
         example: golang json 性能分析
       islike:
         type: boolean
-        default: false
   CountLikeModel:
     type: object
-    required:
-      - count
-      - title
     properties:
       count:
         type: integer
-        default: 0
       title:
         type: string
         example: golang json 性能分析
   ShowCommentModel:
     type: object
-    required:
-      - comments
     properties:
       comments:
         type: array
@@ -230,8 +223,6 @@ definitions:
           $ref: '#/definitions/CommentModel'
   CommentModel:
     type: object
-    required:
-      - comment
     properties:
       comment:
         type: string
@@ -244,15 +235,10 @@ definitions:
         example: sonic@foxmail.com
   ErrorModel:
     type: object
-    required:
-      - message
-      - code
     properties:
       message:
         type: string
         example: error message
       code:
         type: integer
-        default: 400
-        enum:
-          - 400
+        example: 400
