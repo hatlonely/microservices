@@ -11,6 +11,8 @@ info:
 host: hatlonely.com
 basePath: /api
 tags:
+  - name: view
+    description: 浏览
   - name: like
     description: 点赞
   - name: comment
@@ -18,6 +20,58 @@ tags:
 schemes:
   - http
 paths:
+  /doview:
+    get:
+      tags:
+        - view
+      summary: 浏览
+      description: ''
+      operationId: doView
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/ErrorModel'
+        '500':
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/ErrorModel'
+  /countview:
+    get:
+      tags:
+        - view
+      summary: 浏览
+      description: ''
+      operationId: countView
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - name: title
+          in: query
+          description: 文章标题
+          required: true
+          type: string
+      responses:
+        '200':
+          description: 成功
+          schema:
+            $ref: '#/definitions/CountViewModel'
+        '500':
+          description: 内部错误
+          schema:
+            $ref: '#/definitions/ErrorModel'
   /dolike:
     get:
       tags:
@@ -190,6 +244,14 @@ paths:
           schema:
             $ref: '#/definitions/ErrorModel'
 definitions:
+  CountViewModel:
+    type: object
+    properties:
+      count:
+        type: integer
+      title:
+        type: string
+        example: golang json 性能分析
   ShowLikeModel:
     type: object
     properties:
