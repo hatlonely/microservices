@@ -109,19 +109,24 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 	})
 
 	api.CommentShowCommentHandler = comment.ShowCommentHandlerFunc(func(params comment.ShowCommentParams) middleware.Responder {
-		//comments, err := comment_like.ShowComment(params.Title)
-		//code := int64(200)
-		//message := "ok"
-		//if err != nil {
-		//	code = int64(400)
-		//	message = err.Error()
-		//	return comment.NewShowCommentBadRequest().WithPayload(&models.ErrorModel{
-		//		Code:    &code,
-		//		Message: &message,
-		//	})
-		//}
+		comments, err := comment_like.ShowComment(params.Title)
+		if err != nil {
+			return comment.NewShowCommentBadRequest().WithPayload(&models.ErrorModel{
+				Code: http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
 
-		return middleware.NotImplemented("operation comment.ShowComment has not yet been implemented")
+		payload := models.ShowCommentModel{}
+		for _, c := range *comments {
+			payload.Comments = append(payload.Comments, &models.CommentModel{
+				Comment: c.Comment,
+				Nickname: c.NickName,
+				Mail: c.Mail,
+			})
+		}
+
+		return comment.NewShowCommentOK().WithPayload(&payload)
 	})
 
 	api.LikeShowLikeHandler = like.ShowLikeHandlerFunc(func(params like.ShowLikeParams) middleware.Responder {
