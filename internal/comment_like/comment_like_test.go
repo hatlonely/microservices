@@ -133,12 +133,12 @@ func TestDoComment(t *testing.T) {
 		ip := "127.0.0.1"
 		ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
 		title := "golang 网络框架之 grpc"
-		comment := "写得不错"
+		content := "写得不错"
 		nickname := "sonic"
 		mail := "sonic@foxmail.com"
 
 		Convey("When 用户评论", func() {
-			err := DoComment(ip, ua, title, comment, nickname, mail)
+			err := DoComment(ip, ua, title, content, nickname, mail)
 			So(err, ShouldBeNil)
 			Convey("Then 有了一条评论", func() {
 				var comments []Comment
@@ -147,7 +147,7 @@ func TestDoComment(t *testing.T) {
 				So(comments[0].Ip, ShouldEqual, ip)
 				So(comments[0].Ua, ShouldEqual, ua)
 				So(comments[0].Title, ShouldEqual, title)
-				So(comments[0].Comment, ShouldEqual, comment)
+				So(comments[0].Content, ShouldEqual, content)
 				So(comments[0].Nickname, ShouldEqual, nickname)
 				So(comments[0].Mail, ShouldEqual, mail)
 			})
@@ -164,15 +164,15 @@ func TestShowComment(t *testing.T) {
 		ip := "127.0.0.1"
 		ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
 		title := "golang 网络框架之 grpc"
-		comment := "写得不错"
+		content := "写得不错"
 		nickname := "sonic"
 		mail := "sonic@foxmail.com"
 
 		Convey("When 用户评论两次，然后显示评论", func() {
 			var err error
-			err = DoComment(ip, ua, title, comment, nickname, mail)
+			err = DoComment(ip, ua, title, content, nickname, mail)
 			So(err, ShouldBeNil)
-			err = DoComment(ip, ua, title, comment, nickname, mail)
+			err = DoComment(ip, ua, title, content, nickname, mail)
 			So(err, ShouldBeNil)
 			Convey("Then 显示两条评论", func() {
 				comments, err := ShowComment(title)
@@ -181,7 +181,7 @@ func TestShowComment(t *testing.T) {
 				So((*comments)[0].Ip, ShouldEqual, ip)
 				So((*comments)[0].Ua, ShouldEqual, ua)
 				So((*comments)[0].Title, ShouldEqual, title)
-				So((*comments)[0].Comment, ShouldEqual, comment)
+				So((*comments)[0].Content, ShouldEqual, content)
 				So((*comments)[0].Nickname, ShouldEqual, nickname)
 				So((*comments)[0].Mail, ShouldEqual, mail)
 			})

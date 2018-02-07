@@ -224,7 +224,7 @@ definitions:
   CommentModel:
     type: object
     properties:
-      comment:
+      content:
         type: string
         example: 写得很好
       nickname:

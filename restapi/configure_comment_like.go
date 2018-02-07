@@ -120,9 +120,9 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 		payload := models.ShowCommentModel{}
 		for _, c := range *comments {
 			payload.Comments = append(payload.Comments, &models.CommentModel{
-				Comment: c.Comment,
+				Content:  c.Content,
 				Nickname: c.Nickname,
-				Mail: c.Mail,
+				Mail:     c.Mail,
 			})
 		}
 

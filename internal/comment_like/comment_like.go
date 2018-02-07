@@ -22,7 +22,7 @@ type Comment struct {
 	Ip        string `gorm:"type:varchar(20);not null;"`
 	Ua        string `gorm:"type:varchar(256);not null;"`
 	Title     string `gorm:"type:varchar(128);not null;index:title_idx"`
-	Comment   string `gorm:"type:varchar(1024);not null;"`
+	Content   string `gorm:"type:varchar(1024);not null;"`
 	Nickname  string `gorm:"type:varchar(64);"`
 	Mail      string `gorm:"type:varchar(256);"`
 	CreatedAt time.Time
@@ -101,12 +101,12 @@ func CountLike(title string) (int64, error) {
 	return count, nil
 }
 
-func DoComment(ip, ua, title, comment, nickname, mail string) error {
+func DoComment(ip, ua, title, content, nickname, mail string) error {
 	cmt := &Comment{
 		Ip:        ip,
 		Ua:        ua,
 		Title:     title,
-		Comment:   comment,
+		Content:   content,
 		Nickname:  nickname,
 		Mail:      mail,
 		CreatedAt: time.Now(),
