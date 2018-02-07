@@ -5,6 +5,78 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 )
 
+func TestDoView(t *testing.T) {
+	Convey("Given 用户在阅读", t, func() {
+		ip := "127.0.0.1"
+		ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+		title := "golang 网络框架之 grpc"
+
+		Convey("When 浏览了一次", func() {
+			err := DoView(ip, ua, title)
+			So(err, ShouldBeNil)
+			Convey("Then 数据库里面应该有一条记录", func() {
+				var count int
+				db.Model(&View{}).Where(&View{Ip: ip, Ua: ua, Title: title}).Count(&count)
+				So(count, ShouldEqual, 1)
+			})
+		})
+
+		Convey("When 又浏览了一次", func() {
+			err := DoView(ip, ua, title)
+			So(err, ShouldBeNil)
+			Convey("Then 数据库里面应该还是一条记录", func() {
+				var count int
+				db.Model(&View{}).Where(&View{Ip: ip, Ua: ua, Title: title}).Count(&count)
+				So(count, ShouldEqual, 2)
+			})
+		})
+
+		Convey("Finally 删除记录", func() {
+			db.Where(&View{Ip: ip, Ua: ua, Title: title}).Delete(View{})
+		})
+	})
+}
+
+func TestCountView(t *testing.T) {
+	Convey("Given 用户在阅读", t, func() {
+		ip := "127.0.0.1"
+		ua := "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36"
+		title := "golang 网络框架之 grpc"
+
+		Convey("When 数据库里面没有浏览信息", func() {
+			count, err := CountView(title)
+			So(err, ShouldBeNil)
+			Convey("Then 点赞次数为0", func() {
+				So(count, ShouldEqual, 0)
+			})
+		})
+
+		Convey("When 先浏览了一次", func() {
+			err := DoView(ip, ua, title)
+			So(err, ShouldBeNil)
+			count, err := CountView(title)
+			So(err, ShouldBeNil)
+			Convey("Then 浏览次数为1", func() {
+				So(count, ShouldEqual, 1)
+			})
+		})
+
+		Convey("When 又浏览了一次", func() {
+			err := DoView("192.168.0.2", ua, title)
+			So(err, ShouldBeNil)
+			count, err := CountView(title)
+			So(err, ShouldBeNil)
+			Convey("Then 浏览次数为2", func() {
+				So(count, ShouldEqual, 2)
+			})
+		})
+
+		Convey("Finally 删除记录", func() {
+			db.Where(&View{Title: title}).Delete(View{})
+		})
+	})
+}
+
 func TestDoLike(t *testing.T) {
 	Convey("Given 用户在阅读", t, func() {
 		ip := "127.0.0.1"

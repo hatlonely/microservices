@@ -15,6 +15,7 @@ import (
 	"microservices/internal/comment_like"
 	"microservices/models"
 	"strings"
+	"microservices/restapi/operations/view"
 )
 
 // This file is safe to edit. Once it exists it will not be overwritten
@@ -38,6 +39,37 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 	api.JSONConsumer = runtime.JSONConsumer()
 
 	api.JSONProducer = runtime.JSONProducer()
+
+	api.ViewDoViewHandler = view.DoViewHandlerFunc(func(params view.DoViewParams) middleware.Responder {
+		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]
+		ua := params.HTTPRequest.UserAgent()
+
+		if err := comment_like.DoView(ip, ua, params.Title); err != nil {
+			return view.NewDoViewInternalServerError().WithPayload(&models.ErrorModel{
+				Code:    http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+
+		return view.NewDoViewOK().WithPayload(&models.ErrorModel{
+			Code:    http.StatusOK,
+			Message: "ok",
+		})
+	})
+
+	api.ViewCountViewHandler = view.CountViewHandlerFunc(func(params view.CountViewParams) middleware.Responder {
+		count, err := comment_like.CountView(params.Title)
+		if err != nil {
+			return view.NewCountViewInternalServerError().WithPayload(&models.ErrorModel{
+				Code: http.StatusInternalServerError,
+				Message: err.Error(),
+			})
+		}
+		return view.NewCountViewOK().WithPayload(&models.CountViewModel{
+			Count: count,
+			Title: params.Title,
+		})
+	})
 
 	api.LikeDoLikeHandler = like.DoLikeHandlerFunc(func(params like.DoLikeParams) middleware.Responder {
 		ip := strings.Split(params.HTTPRequest.RemoteAddr, ":")[0]

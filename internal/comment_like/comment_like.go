@@ -8,6 +8,15 @@ import (
 	"time"
 )
 
+type View struct {
+	ID int `gorm:"primary_key"`
+	Ip        string `gorm:"type:varchar(20);not null;index:ip_idx"`
+	Ua        string `gorm:"type:varchar(256);not null;"`
+	Title     string `gorm:"type:varchar(128);not null;index:title_idx"`
+	Hash      uint64
+	CreatedAt time.Time
+}
+
 type Like struct {
 	ID        int    `gorm:"primary_key"`
 	Ip        string `gorm:"type:varchar(20);not null;index:ip_idx"`
@@ -37,6 +46,11 @@ func init() {
 		panic(err)
 	}
 
+	if !db.HasTable(&View{}) {
+		if err := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&View{}).Error; err != nil {
+			panic(err)
+		}
+	}
 	if !db.HasTable(&Like{}) {
 		if err := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&Like{}).Error; err != nil {
 			panic(err)
@@ -47,6 +61,33 @@ func init() {
 			panic(err)
 		}
 	}
+}
+
+func DoView(ip, ua, title string) error {
+	view := &View{
+		Ip:        ip,
+		Ua:        ua,
+		Title:     title,
+		Hash:      murmur3.Sum64([]byte(strings.Join([]string{ip, ua, title}, "-"))) >> 1,
+		CreatedAt: time.Now(),
+	}
+
+	if err := db.Create(view).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CountView(title string) (int64, error) {
+	var count int64
+	err := db.Model(&View{}).Where(&View{Title: title}).Count(&count).Error
+
+	if err != nil {
+		return 0, err
+	}
+
+	return count, nil
 }
 
 func DoLike(ip, ua, title string) error {
