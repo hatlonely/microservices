@@ -61,7 +61,7 @@ func configureAPI(api *operations.CommentLikeAPI) http.Handler {
 			mail = *params.Mail
 		}
 
-		if err := comment_like.DoComment(ip, ua, params.Title, params.Comment, nickname, mail); err != nil {
+		if err := comment_like.DoComment(ip, ua, params.Title, params.Content, nickname, mail); err != nil {
 			return comment.NewDoCommentBadRequest().WithPayload(&models.ErrorModel{
 				Code:    http.StatusInternalServerError,
 				Message: err.Error(),

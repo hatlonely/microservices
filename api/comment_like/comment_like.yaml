@@ -139,19 +139,19 @@ paths:
           description: 文章标题
           required: true
           type: string
-        - name: comment
+        - name: content
           in: query
-          description: 文章评论
+          description: 评论内容
           required: true
           type: string
         - name: nickname
           in: query
-          description: 昵称
+          description: 用户昵称
           required: false
           type: string
         - name: mail
           in: query
-          description: 邮箱地址
+          description: 用户邮箱
           required: false
           type: string
       responses:
