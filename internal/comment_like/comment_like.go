@@ -1,7 +1,7 @@
 package comment_like
 
-import "github.com/jinzhu/gorm"
 import (
+	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/spaolacci/murmur3"
 	"strings"
@@ -12,7 +12,7 @@ type Like struct {
 	ID        int    `gorm:"primary_key"`
 	Ip        string `gorm:"type:varchar(20);not null;index:ip_idx"`
 	Ua        string `gorm:"type:varchar(256);not null;"`
-	Title     string `gorm:"type:varchar(256);not null;index:title_idx"`
+	Title     string `gorm:"type:varchar(128);not null;index:title_idx"`
 	Hash      uint64 `gorm:"unique_index:hash_idx;"`
 	CreatedAt time.Time
 }
@@ -38,10 +38,14 @@ func init() {
 	}
 
 	if !db.HasTable(&Like{}) {
-		db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&Like{})
+		if err := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&Like{}).Error; err != nil {
+			panic(err)
+		}
 	}
 	if !db.HasTable(&Comment{}) {
-		db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&Comment{})
+		if err := db.Set("gorm:table_options", "ENGINE=InnoDB DEFAULT CHARSET=utf8").CreateTable(&Comment{}).Error; err != nil {
+			panic(err)
+		}
 	}
 }
 
