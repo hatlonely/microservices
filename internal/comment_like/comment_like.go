@@ -91,21 +91,24 @@ func CountView(title string) (int64, error) {
 }
 
 func DoLike(ip, ua, title string) error {
+	hash := murmur3.Sum64([]byte(strings.Join([]string{ip, ua, title}, "-"))) >> 1
 	like := &Like{
 		Ip:        ip,
 		Ua:        ua,
 		Title:     title,
-		Hash:      murmur3.Sum64([]byte(strings.Join([]string{ip, ua, title}, "-"))) >> 1,
+		Hash:      hash,
 		CreatedAt: time.Now(),
 	}
 
 	var count int
-	if err := db.Model(&Like{}).Where(like).Count(&count).Error; err != nil {
+	if err := db.Model(&Like{}).Where(&Like{Hash: hash}).Count(&count).Error; err != nil {
 		return err
 	}
 
-	if err := db.Create(like).Error; err != nil {
-		return err
+	if count == 0 {
+		if err := db.Create(like).Error; err != nil {
+			return err
+		}
 	}
 
 	return nil

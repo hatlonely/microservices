@@ -95,7 +95,7 @@ func TestDoLike(t *testing.T) {
 
 		Convey("When 重复点赞", func() {
 			err := DoLike(ip, ua, title)
-			So(err, ShouldNotBeNil)
+			So(err, ShouldBeNil)
 			Convey("Then 数据库里面应该还是一条记录", func() {
 				var count int
 				db.Model(&Like{}).Where(&Like{Ip: ip, Ua: ua, Title: title}).Count(&count)
