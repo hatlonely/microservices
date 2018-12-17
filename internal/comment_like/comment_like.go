@@ -1,15 +1,16 @@
 package comment_like
 
 import (
+	"strings"
+	"time"
+
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/spaolacci/murmur3"
-	"strings"
-	"time"
 )
 
 type View struct {
-	ID int `gorm:"primary_key"`
+	ID        int    `gorm:"primary_key"`
 	Ip        string `gorm:"type:varchar(20);not null;index:ip_idx"`
 	Ua        string `gorm:"type:varchar(256);not null;"`
 	Title     string `gorm:"type:varchar(128);not null;index:title_idx"`
@@ -126,7 +127,6 @@ func DoUnlike(ip, ua, title string) error {
 func ShowLike(ip, ua, title string) (bool, error) {
 	var count int
 	err := db.Model(&Like{}).Where(&Like{Ip: ip, Ua: ua, Title: title}).Count(&count).Error
-
 	if err != nil {
 		return false, err
 	}
